@@ -17,14 +17,25 @@ COPY package.json pnpm-lock.yaml ./
 # para poder hacer el build
 RUN pnpm install
 
+# eliminar el archivo que pisa todo
+RUN rm -f .env.local
+
+# copiar el archivo de producción
+COPY .env.production .env.production
+
 # copiamos el resto de los archivos de codigo en la carpeta de trabajo
 COPY . .
 
 # buildeando la app para obtener las paginas estaticas
-RUN pnpm build
+RUN pnpm build --mode production
+
+# TEMPORAL — nos permite entrar al builder
+# RUN mkdir /debug
 
 # segundo stage, a partir de aca lo de arrba ya no "existe" ya que es una cosa aparte
 FROM nginx:alpine
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # IMPORTANTE: el  --from=builder es necesario porque apartir del FROM nginx:alpine esto es una fase completamente
 # aparte, por lo que la carpeta /app anterior en este punto no existe, con el flag lo que hacemos es decirle

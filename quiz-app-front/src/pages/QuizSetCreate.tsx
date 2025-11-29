@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { createQuizSet } from "../api/quizSet";
 
 export default function QuizSetCreate() {
   const [text, setText] = useState("");
@@ -20,7 +20,7 @@ export default function QuizSetCreate() {
   const handleSubmit = async () => {
     try {
       const json = JSON.parse(text);
-      await axios.post("http://localhost:4000/quiz-sets", json);
+      await createQuizSet(json);
       navigate("/");
     } catch (err) {
       alert("JSON inválido o error de servidor");
