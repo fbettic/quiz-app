@@ -1,19 +1,20 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const answerSchema = new mongoose.Schema({
   answer: String,
-  correct: Boolean
+  correct: Boolean,
 });
 
 const questionSchema = new mongoose.Schema({
   question: String,
   answers: [answerSchema],
+  code: { type: String, required: false },
 });
 
 const quizSetSchema = new mongoose.Schema({
   title: String,
   description: String,
-  questions: [questionSchema]
+  questions: [questionSchema],
 });
 
-export default mongoose.model('quiz_set', quizSetSchema);
+export default mongoose.model("quiz_set", quizSetSchema);

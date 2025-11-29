@@ -8,6 +8,7 @@ type Answer = {
 type Question = {
   question: string;
   answers: Answer[];
+  code?: string;
 };
 
 type Props = {
@@ -33,7 +34,20 @@ export default function QuestionCard({ question }: Props) {
   return (
     <div>
       <h3>{question.question}</h3>
-
+      {question.code && (
+        <pre
+          style={{
+            background: "#f4f4f4",
+            border: "1px solid #ddd",
+            padding: "10px",
+            borderRadius: "4px",
+            overflow: "auto",
+            marginBottom: "10px",
+          }}
+        >
+          <code>{question.code}</code>
+        </pre>
+      )}
       <ul style={{ listStyle: "none", padding: 0 }}>
         {shuffled.map((a, i) => {
           const isSelected = selected === i;
@@ -48,12 +62,11 @@ export default function QuestionCard({ question }: Props) {
                 border: "1px solid #ddd",
                 marginBottom: "6px",
                 cursor: "pointer",
-                background:
-                  isSelected
-                    ? isCorrect
-                      ? "#c1f2c1"
-                      : "#f2c1c1"
-                    : "none",
+                background: isSelected
+                  ? isCorrect
+                    ? "#c1f2c1"
+                    : "#f2c1c1"
+                  : "none",
               }}
             >
               {a.answer}
