@@ -9,6 +9,7 @@ const questionSchema = new mongoose.Schema({
   question: String,
   answers: [answerSchema],
   code: { type: String, required: false },
+  score: { type: Number }
 });
 
 const quizSetSchema = new mongoose.Schema({

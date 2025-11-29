@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { sendAnswer } from "../api/quizSet";
 
 type Answer = {
   answer: string;
@@ -6,16 +7,23 @@ type Answer = {
 };
 
 type Question = {
+  _id: string;
   question: string;
   answers: Answer[];
   code?: string;
 };
 
 type Props = {
+  setId: string;
   question: Question;
+  onAnswerSelected: () => void;
 };
 
-export default function QuestionCard({ question }: Props) {
+export default function QuestionCard({
+  setId,
+  question,
+  onAnswerSelected,
+}: Props) {
   const [shuffled, setShuffled] = useState<Answer[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
 
@@ -28,7 +36,9 @@ export default function QuestionCard({ question }: Props) {
   }, [question]);
 
   const handleSelect = (index: number) => {
-    setSelected(index);
+    !selected && setSelected(index);
+    sendAnswer(setId, question._id, shuffled[index].correct);
+    onAnswerSelected();
   };
 
   return (
@@ -37,7 +47,7 @@ export default function QuestionCard({ question }: Props) {
       {question.code && (
         <pre
           style={{
-            background: "#f4f4f4",
+            background: "#000000ff",
             border: "1px solid #ddd",
             padding: "10px",
             borderRadius: "4px",

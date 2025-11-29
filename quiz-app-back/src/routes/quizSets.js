@@ -20,10 +20,49 @@ router.get("/", async (req, res) => {
   res.json(sets);
 });
 
-// Obtener un set con preguntas
+// Obtener un set con preguntas (opcional: filtrar por cantidad y ordenar por peor score)
 router.get("/:id", async (req, res) => {
-  const set = await QuizSet.findById(req.params.id);
-  res.json(set);
+  try {
+    const set = await QuizSet.findById(req.params.id);
+
+    if (!set) {
+      return res.status(404).json({ error: "Set no encontrado" });
+    }
+
+    let questions = set.questions;
+
+    // Ordenar por score ascendente (peor score primero)
+    questions = questions.sort((a, b) => (a.score || 0) - (b.score || 0));
+
+    // Si se proporciona el parámetro limit, limitar la cantidad de preguntas
+    const limit = req.query.limit ? parseInt(req.query.limit) : null;
+    if (limit && limit > 0) {
+      questions = questions.slice(0, limit);
+    }
+
+    res.json({
+      ...set.toObject(),
+      questions,
+    });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+// Informar respuesta correcta o incorrecta
+router.patch("/:setId/questions/:questionId", async (req, res) => {
+  try {
+    const answer = req.body.correct;
+    const score = answer ? 1 : -1;
+    const updatedSet = await QuizSet.findByIdAndUpdate(
+      req.params.setId,
+      { $inc: { "questions.$[q].score": score } },
+      { arrayFilters: [{ "q._id": req.params.questionId }], new: true }
+    );
+    res.json(updatedSet);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
 });
 
 // Eliminar un set
